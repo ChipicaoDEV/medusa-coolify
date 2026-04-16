@@ -102,9 +102,6 @@ function buildOrderEmailHtml(order: any): string {
               <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr>
                   <td align="center" style="padding-bottom:24px;border-bottom:1px solid #F0F0F0;">
-                    <div style="width:56px;height:56px;border-radius:50%;background:#E8F5E9;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-                      <img src="https://i.ibb.co/G3pkSmmJ/favico.png" alt="" width="28" height="28" style="display:block;border-radius:4px;" />
-                    </div>
                     <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1A1A1A;">Comanda ta a fost plasată cu succes!</h1>
                     <p style="margin:0 0 16px;font-size:14px;color:#888888;">
                       Vei primi actualizări privind statusul comenzii la <strong style="color:#1A1A1A;">${order.email}</strong>
@@ -220,18 +217,18 @@ export default async function sendOrderConfirmationEmail({
         "id",
         "display_id",
         "email",
-        "total",
-        "subtotal",
-        "item_subtotal",
-        "shipping_subtotal",
+        "+total",
+        "+subtotal",
+        "+item_subtotal",
+        "+shipping_subtotal",
         "currency_code",
         "created_at",
         "items.id",
         "items.product_title",
         "items.thumbnail",
         "items.quantity",
-        "items.unit_price",
-        "items.total",
+        "+items.unit_price",
+        "+items.total",
         "shipping_address.first_name",
         "shipping_address.last_name",
         "shipping_address.address_1",
