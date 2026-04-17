@@ -53,8 +53,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.status(400).json({ error: "Date invalide pentru inițierea plății." })
   }
 
-  // Medusa stores amounts in subunits (bani). Convert to RON with 2 decimals.
-  const amount = (total / 100).toFixed(2)
+  // Medusa v2 store API returns cart totals in major currency units (RON, not bani).
+  const amount = Number(total).toFixed(2)
   const curr = "RON"
   // invoice_id max 45 chars. Strip "cart_" prefix → ~22 char ULID.
   const invoiceId = cart_id.replace(/^cart_/, "").slice(0, 45)
