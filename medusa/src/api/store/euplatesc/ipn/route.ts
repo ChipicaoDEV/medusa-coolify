@@ -126,7 +126,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       const { result: col } = await createPaymentCollectionForCartWorkflow(req.scope).run({
         input: { cart_id: cartId },
       })
-      paymentCollectionId = col.id
+      paymentCollectionId = (col as { id: string }).id
       console.log(
         `[EuPlătesc IPN] Created payment collection ${paymentCollectionId} for cart ${cartId}`
       )
