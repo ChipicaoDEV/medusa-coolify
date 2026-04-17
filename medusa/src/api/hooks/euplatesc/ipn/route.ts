@@ -124,10 +124,20 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     let paymentCollectionId: string = cartData.payment_collection?.id
 
     if (!paymentCollectionId) {
-      const { result: col } = await createPaymentCollectionForCartWorkflow(req.scope).run({
+      await createPaymentCollectionForCartWorkflow(req.scope).run({
         input: { cart_id: cartId },
       })
-      paymentCollectionId = (col as { id: string }).id
+      // Workflow returns void — re-query to get the newly created ID
+      const { data: freshCarts } = await (query as any).graph({
+        entity: "cart",
+        fields: ["payment_collection.id"],
+        filters: { id: cartId },
+      })
+      paymentCollectionId = freshCarts?.[0]?.payment_collection?.id
+      if (!paymentCollectionId) {
+        console.error(`[EuPlătesc IPN] Payment collection not found after creation for cart ${cartId}`)
+        return res.status(200).send("OK")
+      }
       console.log(
         `[EuPlătesc IPN] Created payment collection ${paymentCollectionId} for cart ${cartId}`
       )
@@ -157,7 +167,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     })
 
     console.log(
-      `[EuPlătesc IPN] Order ${order.id} placed successfully ` +
+      `[EuPlătesc IPN] Order ${order?.id} placed successfully ` +
       `for cart ${cartId} (ep_id=${body.ep_id})`
     )
   } catch (e: any) {
