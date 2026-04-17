@@ -77,7 +77,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   // Redirect URLs (not in hash)
   const backRef = `${storeUrl}/${country_code}/checkout/euplatesc/success?cart_id=${cart_id}`
   const cancelBackRef = `${storeUrl}/${country_code}/checkout/euplatesc/fail?cart_id=${cart_id}`
-  const silentUrl = `${backendUrl}/store/euplatesc/ipn`
+  const silentUrl = `${backendUrl}/hooks/euplatesc/ipn`
 
   // Fetch cart for billing pre-fill (best-effort — missing fields are just omitted)
   let billingFields: Record<string, string> = {}
