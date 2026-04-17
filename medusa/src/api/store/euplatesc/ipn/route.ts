@@ -44,7 +44,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.status(500).send("Configuration error")
   }
 
-  const body = req.body as Record<string, string>
+  const body = (req.body ?? {}) as Record<string, string>
+  console.log("[EuPlătesc IPN] raw body keys:", Object.keys(body))
 
   // ── Hash verification ────────────────────────────────────────────────────────
   const signedFields = {
