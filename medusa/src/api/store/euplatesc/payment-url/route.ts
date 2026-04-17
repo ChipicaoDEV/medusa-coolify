@@ -107,12 +107,12 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       // Signed fields
       ...signedFields,
       fp_hash: fpHash,
-      // Redirect fields (not signed)
-      back_ref: backRef,
-      cancel_back_ref: cancelBackRef,
+      // Redirect URLs — documented ExtraData fields (back_ref/cancel_back_ref are not in spec)
+      "ExtraData[successurl]": backRef,
+      "ExtraData[failedurl]": cancelBackRef,
       // Server-to-server IPN callback (not signed)
       "ExtraData[silenturl]": silentUrl,
-      // Redirect method: GET so our success page can read query params
+      // Redirect method: GET so our success page can read query params via ExtraData[successurl]
       "ExtraData[ep_method]": "get",
       // Pre-filled billing (not signed)
       ...billingFields,
