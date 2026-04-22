@@ -40,7 +40,19 @@ function buildOrderEmailHtml(order: any): string {
     ? isPickup ? "Plată la ridicare" : "Ramburs la livrare"
     : (paymentSession?.provider_id ?? "—")
 
-  const itemsHtml = items.map((item: any) => `
+  // Prices come from query.graph as plain decimal RON values (e.g. 15.19)
+  // item.total is a computed field not returned by query.graph — compute manually
+  const shippingAmount: number = order.shipping_methods?.[0]?.amount ?? 0
+  const itemsSubtotal: number = items.reduce(
+    (sum: number, item: any) => sum + (item.unit_price ?? 0) * (item.quantity ?? 1),
+    0
+  )
+  // Use summary.original_order_total — the only reliable total from query.graph
+  const orderTotal: number = order.summary?.original_order_total ?? (itemsSubtotal + shippingAmount)
+
+  const itemsHtml = items.map((item: any) => {
+    const lineTotal = (item.unit_price ?? 0) * (item.quantity ?? 1)
+    return `
     <tr>
       <td style="padding:12px 0;border-bottom:1px solid #F0F0F0;">
         <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -53,16 +65,16 @@ function buildOrderEmailHtml(order: any): string {
             </td>
             <td valign="middle">
               <p style="margin:0 0 2px;font-size:14px;font-weight:600;color:#1A1A1A;">${item.product_title ?? "—"}</p>
-              <p style="margin:0;font-size:12px;color:#888888;">${item.quantity} × ${formatRon(item.unit_price)}</p>
+              <p style="margin:0;font-size:12px;color:#888888;">${item.quantity ?? 1} × ${formatRon(item.unit_price)}</p>
             </td>
             <td valign="middle" align="right" style="white-space:nowrap;">
-              <p style="margin:0;font-size:14px;font-weight:600;color:#1A1A1A;">${formatRon(item.total)}</p>
+              <p style="margin:0;font-size:14px;font-weight:600;color:#1A1A1A;">${formatRon(lineTotal)}</p>
             </td>
           </tr>
         </table>
       </td>
     </tr>
-  `).join("")
+  `}).join("")
 
   const addrHtml = addr ? `
     <p style="margin:0;font-size:14px;font-weight:600;color:#1A1A1A;">${addr.first_name ?? ""} ${addr.last_name ?? ""}</p>
@@ -127,15 +139,15 @@ function buildOrderEmailHtml(order: any): string {
                     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;border-top:1px solid #F0F0F0;padding-top:16px;">
                       <tr>
                         <td style="font-size:14px;color:#888888;padding-bottom:8px;">Subtotal</td>
-                        <td align="right" style="font-size:14px;color:#888888;padding-bottom:8px;">${formatRon(order.item_subtotal ?? order.subtotal)}</td>
+                        <td align="right" style="font-size:14px;color:#888888;padding-bottom:8px;">${formatRon(itemsSubtotal)}</td>
                       </tr>
                       <tr>
                         <td style="font-size:14px;color:#888888;padding-bottom:12px;">Livrare</td>
-                        <td align="right" style="font-size:14px;color:#888888;padding-bottom:12px;">${(order.shipping_subtotal ?? 0) > 0 ? formatRon(order.shipping_subtotal) : "Gratuită"}</td>
+                        <td align="right" style="font-size:14px;color:#888888;padding-bottom:12px;">${shippingAmount > 0 ? formatRon(shippingAmount) : "Gratuită"}</td>
                       </tr>
                       <tr style="border-top:1px solid #F0F0F0;">
                         <td style="font-size:15px;font-weight:700;color:#1A1A1A;padding-top:12px;">Total</td>
-                        <td align="right" style="font-size:15px;font-weight:700;color:#1A1A1A;padding-top:12px;">${formatRon(order.total)}</td>
+                        <td align="right" style="font-size:15px;font-weight:700;color:#1A1A1A;padding-top:12px;">${formatRon(orderTotal)}</td>
                       </tr>
                     </table>
                   </td>
@@ -214,32 +226,12 @@ export default async function sendOrderConfirmationEmail({
     const { data: orders } = await query.graph({
       entity: "order",
       fields: [
-        "id",
-        "display_id",
-        "email",
-        "+total",
-        "+subtotal",
-        "+item_subtotal",
-        "+shipping_subtotal",
-        "currency_code",
-        "created_at",
-        "items.id",
-        "items.product_title",
-        "items.thumbnail",
-        "items.quantity",
-        "items.unit_price",
-        "items.total",
-        "shipping_address.first_name",
-        "shipping_address.last_name",
-        "shipping_address.address_1",
-        "shipping_address.address_2",
-        "shipping_address.postal_code",
-        "shipping_address.city",
-        "shipping_address.province",
-        "shipping_address.country_code",
-        "shipping_address.phone",
+        "*",
+        "summary.*",
+        "items.*",
+        "shipping_address.*",
+        "shipping_methods.*",
         "payment_collections.payment_sessions.provider_id",
-        "shipping_methods.name",
       ],
       filters: { id: data.id },
     })
