@@ -62,6 +62,9 @@ module.exports = defineConfig({
         ],
       },
     },
+    {
+      resolve: "./src/modules/quote-request",
+    },
   ],
 
 });
