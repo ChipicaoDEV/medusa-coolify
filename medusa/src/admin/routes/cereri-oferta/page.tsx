@@ -1,12 +1,10 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { InboxIn } from "@medusajs/icons"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Container, Heading, Badge, Text, Button, Table } from "@medusajs/ui"
 
 export const config = defineRouteConfig({
   label: "Cereri Ofertă",
-  icon: InboxIn,
 })
 
 type QuoteRequest = {

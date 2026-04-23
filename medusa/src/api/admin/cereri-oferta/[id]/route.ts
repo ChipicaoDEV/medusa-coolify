@@ -24,7 +24,7 @@ export async function PATCH(req: MedusaRequest, res: MedusaResponse) {
 
   const quoteService = req.scope.resolve<QuoteRequestModuleService>(QUOTE_REQUEST_MODULE)
 
-  const [updated] = await quoteService.updateQuoteRequests({ id, status })
+  const updated = await quoteService.updateQuoteRequests({ id, status })
 
   return res.json({ quote_request: updated })
 }
