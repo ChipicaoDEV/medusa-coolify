@@ -2,6 +2,7 @@ import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Container, Heading, Badge, Text, Button, Table } from "@medusajs/ui"
+import { sdk } from "../../lib/sdk"
 
 export const config = defineRouteConfig({
   label: "Cereri Ofertă",
@@ -44,27 +45,20 @@ function formatDate(iso: string) {
   })
 }
 
-async function apiFetch(path: string, options?: RequestInit) {
-  const res = await fetch(path, { credentials: "include", ...options })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
-}
-
 const CereriOfertaPage = () => {
   const [selected, setSelected] = useState<QuoteRequest | null>(null)
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery<{ quote_requests: QuoteRequest[]; count: number }>({
     queryKey: ["cereri-oferta"],
-    queryFn: () => apiFetch("/admin/cereri-oferta"),
+    queryFn: () => sdk.client.fetch("/admin/cereri-oferta"),
   })
 
   const { mutate: updateStatus } = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
-      apiFetch(`/admin/cereri-oferta/${id}`, {
+      sdk.client.fetch(`/admin/cereri-oferta/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: { status },
       }),
     onSuccess: (_, { id, status }) => {
       queryClient.setQueryData<{ quote_requests: QuoteRequest[]; count: number }>(
