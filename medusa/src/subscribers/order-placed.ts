@@ -101,7 +101,7 @@ function buildOrderEmailHtml(order: any): string {
           <!-- Header / Logo -->
           <tr>
             <td align="center" style="padding-bottom:24px;">
-              <img src="https://i.ibb.co/G3pkSmmJ/favico.png" alt="Orizont" width="48" height="48" style="display:block;border-radius:8px;" />
+              <img src="https://orizont-srl.ro/logo-2.png" alt="Orizont" width="48" height="48" style="display:block;border-radius:8px;" />
               <p style="margin:8px 0 0;font-size:20px;font-weight:700;color:#1A1A1A;">Orizont</p>
             </td>
           </tr>
