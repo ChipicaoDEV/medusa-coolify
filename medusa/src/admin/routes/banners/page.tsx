@@ -2,7 +2,7 @@ import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { useState, useRef } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Container, Heading, Text, Button, Badge, Input, Switch, toast } from "@medusajs/ui"
-import { Photo, PencilSquare, Trash, ArrowUp, ArrowDown, Plus, XMark } from "@medusajs/icons"
+import { Photo, PencilSquare, Trash, ArrowUpMini, ArrowDownMini, Plus, XMark } from "@medusajs/icons"
 
 export const config = defineRouteConfig({
   label: "Bannere",
@@ -296,7 +296,7 @@ const BannersPage = () => {
                         className="p-1 rounded hover:bg-ui-bg-component disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Mută sus"
                       >
-                        <ArrowUp className="w-3.5 h-3.5" />
+                        <ArrowUpMini className="w-3.5 h-3.5" />
                       </button>
                       <span className="text-xs text-ui-fg-subtle w-4 text-center">{b.sort_order}</span>
                       <button
@@ -305,7 +305,7 @@ const BannersPage = () => {
                         className="p-1 rounded hover:bg-ui-bg-component disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Mută jos"
                       >
-                        <ArrowDown className="w-3.5 h-3.5" />
+                        <ArrowDownMini className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>
