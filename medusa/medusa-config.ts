@@ -11,7 +11,6 @@ module.exports = defineConfig({
     },
   ],
 
-
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,
@@ -72,6 +71,9 @@ module.exports = defineConfig({
     },
     {
       resolve: "./src/modules/quote-request",
+    },
+    {
+      resolve: "./src/modules/banner",
     },
   ],
 
