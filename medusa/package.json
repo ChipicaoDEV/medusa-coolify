@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "resend": "^4.5.1",
+    "medusa-variant-images": "^1.1.4",
     "@medusajs/admin-sdk": "2.8.8",
     "@medusajs/cli": "2.8.8",
     "@medusajs/framework": "2.8.8",

@@ -4,6 +4,14 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
 module.exports = defineConfig({
 
+  plugins: [
+    {
+      resolve: "medusa-variant-images",
+      options: {},
+    },
+  ],
+
+
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,
