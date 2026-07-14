@@ -62,7 +62,7 @@ const ProductVariantGuidesWidget = ({ data }: DetailWidgetProps<HttpTypes.AdminP
 
   // ── Alte metadate (chei simple text) ────────────────────────────────────────
   const initialMetaEntries: MetaEntry[] = Object.entries(metadata)
-    .filter(([k, v]) => k !== "guides" && isPrimitive(v))
+    .filter(([k, v]) => k !== "guides" && isPrimitive(v) && String(v).trim() !== "")
     .map(([k, v]) => ({ key: k, value: String(v) }))
 
   const [metaEntries, setMetaEntries] = useState<MetaEntry[]>(initialMetaEntries)
@@ -110,6 +110,21 @@ const ProductVariantGuidesWidget = ({ data }: DetailWidgetProps<HttpTypes.AdminP
 
   const updateMetaValue = (idx: number, value: string) => {
     setMetaEntries((prev) => prev.map((e, i) => (i === idx ? { ...e, value } : e)))
+  }
+
+  // Blanking a value removes the row entirely — an empty string wouldn't actually
+  // delete the key server-side (Medusa merges metadata on update), it would just
+  // leave a ghost key with an empty value.
+  const commitMetaValue = async (idx: number) => {
+    const current = metaEntries[idx]
+    if (!current) return
+    if (current.value.trim() === "") {
+      const updated = metaEntries.filter((_, i) => i !== idx)
+      setMetaEntries(updated)
+      await persistMeta(updated)
+    } else {
+      await persistMeta(metaEntries)
+    }
   }
 
   const removeMeta = async (idx: number) => {
@@ -239,7 +254,7 @@ const ProductVariantGuidesWidget = ({ data }: DetailWidgetProps<HttpTypes.AdminP
                 type="text"
                 value={e.value}
                 onChange={(ev) => updateMetaValue(i, ev.target.value)}
-                onBlur={() => persistMeta(metaEntries)}
+                onBlur={() => commitMetaValue(i)}
                 onKeyDown={(ev) => { if (ev.key === "Enter") (ev.target as HTMLInputElement).blur() }}
                 disabled={metaSaving}
                 className="flex-1 h-8 px-2 rounded-md border border-ui-border-base bg-ui-bg-field text-sm text-ui-fg-base focus:outline-none focus:ring-2 focus:ring-ui-border-interactive"
